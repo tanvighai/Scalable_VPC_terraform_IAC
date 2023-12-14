@@ -55,13 +55,4 @@ resource "aws_autoscaling_group" "asg" {
   vpc_zone_identifier = var.subnets
   target_group_arns   = [aws_lb_target_group.tg.arn]
 
-  launch_template {
-    id      = aws_launch_template.template.id
-    version = "$Latest"
-  }
-  tag {
-    key                 = "project"
-    propagate_at_launch = true
-    value               = "expense"
-  }
-}
+

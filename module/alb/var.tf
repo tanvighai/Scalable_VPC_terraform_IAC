@@ -7,3 +7,5 @@ variable "subnets" {}
 variable "dns_name" {}
 variable "zone_id" {}
 variable "tg_arn" {}
+variable "component" {}
+variable "instance_type" {}

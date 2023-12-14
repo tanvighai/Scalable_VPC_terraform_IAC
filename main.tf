@@ -21,7 +21,7 @@ module "public-lb" {
   vpc_id = module.vpc.vpc_id
   dns_name = "${var.env}.tanvi12online.net"
   zone_id = "Z062321418KWGB5HR8726"
-  tg_arn = module.frontend.tg_arn
+#  tg_arn = module.frontend.tg_arn
 }
 
 module "private-lb" {
@@ -34,11 +34,11 @@ module "private-lb" {
   vpc_id = module.vpc.vpc_id
   dns_name = "${var.env}.tanvi12online.net"
   zone_id = "Z062321418KWGB5HR8726"
-  tg_arn = module.frontend.tg_arn
+#  tg_arn = module.frontend.tg_arn
 }
 
 module "frontend" {
-  source            = "./modules/app"
+  source            = "./module/app"
   app_port          = 80
   component         = "frontend"
   env               = var.env
@@ -50,8 +50,21 @@ module "frontend" {
   desired_capacity  = var.desired_capacity
   max_size          = var.max_size
   min_size          = var.min_size
-  prometheus_cidr   = var.prometheus_cidr
-  kms_key_id        = var.kms_key_id
+#  prometheus_cidr   = var.prometheus_cidr
+#  kms_key_id        = var.kms_key_id
 }
 
-
+module "backend" {
+  source            = "./module/app"
+  app_port          = 8080
+  component         = "backend"
+  env               = var.env
+  instance_type     = "t3.micro"
+  vpc_cidr          = var.vpc_cidr
+  vpc_id            = module.vpc.vpc_id
+  subnets           = module.vpc.private_subnets
+  bastion_node_cidr = var.bastion_node_cidr
+  desired_capacity  = var.desired_capacity
+  max_size          = var.max_size
+  min_size          = var.min_size
+}
