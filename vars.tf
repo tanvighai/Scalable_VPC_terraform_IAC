@@ -13,7 +13,7 @@ variable "max_size" {}
 variable "min_size" {}
 variable "instance_class" {}
 variable "prometheus_cidr" {}
-#variable "kms_key_id" {}
+variable "kms_key_id" {}
 variable "project_name" {}
 variable "instance_types" {}
 variable "node_count" {}

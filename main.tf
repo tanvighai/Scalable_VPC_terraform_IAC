@@ -67,4 +67,5 @@ module "backend" {
   desired_capacity  = var.desired_capacity
   max_size          = var.max_size
   min_size          = var.min_size
+  kms_key_id        = var.kms_key_id
 }
