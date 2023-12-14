@@ -15,5 +15,6 @@ variable "instance_class" {}
 variable "prometheus_cidr" {}
 variable "kms_key_id" {}
 variable "project_name" {}
-variable "instance_types" {}
+variable "instance_type" {}
 variable "node_count" {}
+variable "component" {}

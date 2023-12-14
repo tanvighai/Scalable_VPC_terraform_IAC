@@ -31,22 +31,17 @@ resource "aws_security_group" "security_group" {
   }
 }
 
+
 resource "aws_launch_template" "template" {
-  name                                 = "${var.env}-${var.component}"
-  image_id                             = data.aws_ami.id
-  instance_initiated_shutdown_behavior = "terminate"
-  instance_type                        = var.instance_type
-  vpc_security_group_ids               = [aws_security_group.security_group.id]
-
-  tag_specifications {
-    resource_type = "instance"
-
-    tags = {
-      Name = "${var.env}-${var.component}"
-    }
-  }
+  name                   = "${var.env}-${var.component}"
+  image_id               = data.aws_ami.ami.id
+  instance_type          = var.instance_type
+  vpc_security_group_ids = [aws_security_group.security_group.id]
+  user_data              = base64encode(templatefile("${path.module}/userdata.sh", {
+    role_name = var.component,
+    env       = var.env
+  }))
 }
-
 resource "aws_autoscaling_group" "asg" {
   name                = "${var.env}-${var.component}"
   desired_capacity    = var.desired_capacity
@@ -55,4 +50,13 @@ resource "aws_autoscaling_group" "asg" {
   vpc_zone_identifier = var.subnets
 #  target_group_arns   = [aws_lb_target_group.tg.arn]
 
+  launch_template {
+    id      = aws_launch_template.template.id
+    version = "$Latest"
+  }
+  tag {
+    key                 = "project"
+    propagate_at_launch = true
+    value               = "expense"
+  }
 }
