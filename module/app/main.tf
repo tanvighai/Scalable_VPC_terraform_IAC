@@ -12,7 +12,7 @@ resource "aws_security_group" "security_group" {
   }
 
   ingress {
-    description = "HTTPS"
+    description = "SSH"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -37,6 +37,10 @@ resource "aws_launch_template" "template" {
   image_id               = data.aws_ami.ami.id
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.security_group.id]
+  iam_instance_profile {
+    name = aws_iam_instance_profile.instance_profile.name
+  }
+
   user_data              = base64encode(templatefile("${path.module}/userdata.sh", {
     role_name = var.component,
     env       = var.env
@@ -58,5 +62,50 @@ resource "aws_autoscaling_group" "asg" {
     key                 = "project"
     propagate_at_launch = true
     value               = "expense"
+  }
+}
+
+resource "aws_iam_role" "role" {
+  name = "${var.env}-${var.component}-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+
+  inline_policy {
+    name = "${var.env}-${var.component}-policy"
+
+    policy = jsonencode({
+      "Version" : "2012-10-17",
+      "Statement" : [
+        {
+          "Sid" : "VisualEditor0",
+          "Effect" : "Allow",
+          "Action" : [
+            "kms:Decrypt",
+            "ssm:DescribeParameters",
+            "ssm:GetParameterHistory",
+            "ssm:GetParametersByPath",
+            "ssm:GetParameters",
+            "ssm:GetParameter"
+          ],
+          "Resource" : "*"
+        }
+      ]
+    })
+  }
+
+  tags = {
+    tag-key = "${var.env}-${var.component}-role"
   }
 }
