@@ -17,4 +17,4 @@ variable "kms_key_id" {}
 variable "project_name" {}
 variable "instance_type" {}
 variable "node_count" {}
-variable "component" {}
+#variable "component" {}

@@ -31,6 +31,11 @@ resource "aws_security_group" "security_group" {
   }
 }
 
+resource "aws_iam_instance_profile" "instance_profile" {
+  name = "${var.env}-${var.component}-role"
+  role = aws_iam_role.role.name
+}
+
 
 resource "aws_launch_template" "template" {
   name                   = "${var.env}-${var.component}"
