@@ -71,7 +71,7 @@ module "backend" {
 }
 
 module "mysql" {
-  source = "./modules/rds"
+  source = "./module/rds"
 
   component      = "mysql"
   env            = var.env
